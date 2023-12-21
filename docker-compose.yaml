@@ -1,0 +1,29 @@
+version: "3.6"
+
+services:
+  runner:
+    user: bob
+    build:
+      context: .
+      target: devcontainer
+      args:
+        - X_DOCKER_USER_ID
+        - X_DOCKER_USER_GROUP_ID
+    stdin_open: true
+    tty: true
+    working_dir: "/home/bob/app"
+    volumes:
+      - type: bind
+        source: .
+        target: /home/bob/app
+    secrets:
+      - source: env
+        target: /home/bob/.env
+        uid: "${X_DOCKER_USER_ID}"
+        gid: "${X_DOCKER_USER_GROUP_ID}"
+        mode: 0440
+    command: tail -f /dev/null
+
+secrets:
+  env:
+    file: .env

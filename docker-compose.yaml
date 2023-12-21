@@ -19,10 +19,17 @@ services:
     secrets:
       - source: env
         target: /home/bob/.env
-        uid: "${X_DOCKER_USER_ID}"
-        gid: "${X_DOCKER_USER_GROUP_ID}"
-        mode: 0440
     command: tail -f /dev/null
+    cap_drop:
+      - ALL
+    cap_add:
+      - dac_override
+      - setuid
+      - setgid
+      - sys_admin
+    security_opt:
+      - "apparmor=unconfined"
+      - "seccomp=unconfined"
 
 secrets:
   env:

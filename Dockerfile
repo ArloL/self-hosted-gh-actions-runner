@@ -3,9 +3,30 @@ FROM $DOCKER_REGISTRY/library/ubuntu:22.04 AS base
 
 RUN \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    apt-get update && \
-    apt-get --yes install curl coreutils git && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get update \
+    && apt-get --yes install \
+        ca-certificates \
+        gnupg \
+        curl \
+        coreutils \
+        git \
+        make \
+    && rm -rf /var/lib/apt/lists/*
+RUN install -m 0755 -d /etc/apt/keyrings
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+RUN chmod a+r /etc/apt/keyrings/docker.gpg
+RUN echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+    tee /etc/apt/sources.list.d/docker.list > /dev/null
+RUN \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get update \
+    && apt-get --yes install \
+        docker-ce \
+        docker-ce-cli \
+        docker-buildx-plugin \
+    && rm -rf /var/lib/apt/lists/*
 
 # When using containers for development (e.g. Dev Container or `make docker`)
 # the working directory is shared via a mount. In some Docker implementations
@@ -55,16 +76,6 @@ WORKDIR /home/bob/app
 COPY --chown=bob:bob start.sh .
 
 FROM base as devcontainer
-
-USER root
-
-RUN \
-    --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    apt-get update && \
-    apt-get --yes install git make && \
-    rm -rf /var/lib/apt/lists/*
-
-USER bob
 
 FROM base as runner
 ENTRYPOINT ["./start.sh"]

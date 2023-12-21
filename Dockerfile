@@ -4,7 +4,7 @@ FROM $DOCKER_REGISTRY/library/ubuntu:22.04 AS base
 RUN \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update && \
-    apt-get --yes install curl coreutils && \
+    apt-get --yes install curl coreutils git && \
     rm -rf /var/lib/apt/lists/*
 
 # When using containers for development (e.g. Dev Container or `make docker`)

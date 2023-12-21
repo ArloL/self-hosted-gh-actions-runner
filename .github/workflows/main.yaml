@@ -33,3 +33,8 @@ jobs:
       run: echo "$MATRIX_CONTEXT"
     - name: Dump environment variables
       run: set
+  build:
+    runs-on: self-hosted
+    steps:
+    - name: Make sure build did not change anything
+      run: git diff --exit-code

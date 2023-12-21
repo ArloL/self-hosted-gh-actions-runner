@@ -36,5 +36,6 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
+    - uses: actions/checkout@v4.1.1
     - name: Make sure build did not change anything
       run: git diff --exit-code

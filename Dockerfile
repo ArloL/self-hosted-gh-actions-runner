@@ -68,7 +68,10 @@ RUN curl -o actions-runner-linux-arm64-2.311.0.tar.gz \
 
 USER root
 
-RUN ./bin/installdependencies.sh
+RUN \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    ./bin/installdependencies.sh \
+    && rm -rf /var/lib/apt/lists/*
 
 USER bob
 

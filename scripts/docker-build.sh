@@ -8,10 +8,14 @@ cd "$(dirname "$0")/.." || exit 1
 
 . ./scripts/docker-build-shell-setup.sh
 
+BUILD_COMMAND=docker
+hash img 2>/dev/null && BUILD_COMMAND=img
+
 # shellcheck disable=SC2086
-docker build \
-        --target "runner" \
-        ${DOCKER_BUILD_ARGUMENTS} \
-        .
+${BUILD_COMMAND} build \
+    --tag selfhostedghrunner:latest \
+    --target "runner" \
+    ${DOCKER_BUILD_ARGUMENTS} \
+    .
 
 git diff --exit-code

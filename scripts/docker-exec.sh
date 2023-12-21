@@ -20,11 +20,11 @@ trap cleanup INT TERM EXIT
 
 # shellcheck disable=SC2086
 docker build \
-        ${DOCKER_BUILD_ARGUMENTS} \
-        --build-arg X_DOCKER_USER_ID="$(id -u)" \
-        --build-arg X_DOCKER_USER_GROUP_ID="$(id -u)" \
-        --iidfile "${IMAGE_ID_FILE}" \
-        .
+    ${DOCKER_BUILD_ARGUMENTS} \
+    --build-arg X_DOCKER_USER_ID="$(id -u)" \
+    --build-arg X_DOCKER_USER_GROUP_ID="$(id -u)" \
+    --iidfile "${IMAGE_ID_FILE}" \
+    .
 
 IMAGE_ID=$(cat "${IMAGE_ID_FILE}")
 

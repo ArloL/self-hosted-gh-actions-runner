@@ -9,18 +9,9 @@ RUN \
         coreutils \
         git \
         make \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN \
-    --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    apt-get update \
-    && apt-get --yes install \
         buildah \
-        fuse-overlayfs \
-        libcap2-bin \
-        podman \
-        slirp4netns \
         uidmap \
+        libcap2-bin \
     && rm -rf /var/lib/apt/lists/*
 
 # When using containers for development (e.g. Dev Container or `make docker`)

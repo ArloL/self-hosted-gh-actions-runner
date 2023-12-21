@@ -5,6 +5,28 @@ RUN \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update \
     && apt-get --yes install \
+        curl \
+        coreutils \
+        git \
+        make \
+    && rm -rf /var/lib/apt/lists/*
+
+# install img
+RUN \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get update \
+    && apt-get --yes install \
+        uidmap \
+    && rm -rf /var/lib/apt/lists/*
+RUN curl -fSL "https://github.com/genuinetools/img/releases/download/v0.5.11/img-linux-amd64" -o "/usr/local/bin/img" \
+	&& echo "cc9bf08794353ef57b400d32cd1065765253166b0a09fba360d927cfbd158088  /usr/local/bin/img" | sha256sum -c - \
+	&& chmod a+x "/usr/local/bin/img"
+
+# install docker
+RUN \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get update \
+    && apt-get --yes install \
         ca-certificates \
         gnupg \
         curl \

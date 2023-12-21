@@ -39,12 +39,13 @@ docker run \
     --volume "${PWD}:/home/bob/app" \
     --volume "$(PWD)/.env:/home/bob/.env:ro" \
     --workdir "/home/bob/app" \
-    --cap-add CAP_SETGID \
-    --cap-add=sys_admin \
-    --cap-add mknod \
+    --cap-drop ALL \
+    --cap-add dac_override \
+    --cap-add setuid \
+    --cap-add setgid \
+    --cap-add sys_admin \
     --security-opt apparmor=unconfined \
     --security-opt seccomp=unconfined \
-    --security-opt label=disable \
     "${IMAGE_ID}"
 
 git diff --exit-code

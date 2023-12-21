@@ -1,5 +1,5 @@
 ARG DOCKER_REGISTRY=registry.hub.docker.com
-FROM $DOCKER_REGISTRY/library/ubuntu:22.04 AS base
+FROM $DOCKER_REGISTRY/library/ubuntu:24.04 AS base
 
 RUN \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -11,43 +11,16 @@ RUN \
         make \
     && rm -rf /var/lib/apt/lists/*
 
-# install img
 RUN \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update \
     && apt-get --yes install \
+        buildah \
+        fuse-overlayfs \
+        libcap2-bin \
+        podman \
+        slirp4netns \
         uidmap \
-    && rm -rf /var/lib/apt/lists/*
-RUN curl -fSL "https://github.com/genuinetools/img/releases/download/v0.5.11/img-linux-amd64" -o "/usr/local/bin/img" \
-	&& echo "cc9bf08794353ef57b400d32cd1065765253166b0a09fba360d927cfbd158088  /usr/local/bin/img" | sha256sum -c - \
-	&& chmod a+x "/usr/local/bin/img"
-
-# install docker
-RUN \
-    --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    apt-get update \
-    && apt-get --yes install \
-        ca-certificates \
-        gnupg \
-        curl \
-        coreutils \
-        git \
-        make \
-    && rm -rf /var/lib/apt/lists/*
-RUN install -m 0755 -d /etc/apt/keyrings
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-RUN chmod a+r /etc/apt/keyrings/docker.gpg
-RUN echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-    tee /etc/apt/sources.list.d/docker.list > /dev/null
-RUN \
-    --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    apt-get update \
-    && apt-get --yes install \
-        docker-ce \
-        docker-ce-cli \
-        docker-buildx-plugin \
     && rm -rf /var/lib/apt/lists/*
 
 # When using containers for development (e.g. Dev Container or `make docker`)
@@ -69,12 +42,18 @@ RUN addgroup \
         --system \
         --ingroup bob \
         --uid "${X_DOCKER_USER_ID}" \
+        --home /home/bob \
         --shell /bin/bash \
         bob \
     && mkdir -p /home/bob/app \
-    && chown -R bob:bob /home/bob
+    && chown -R bob:bob /home/bob \
+    && usermod --add-subuids 100000-165535 --add-subgids 100000-165535 bob
 
 USER bob
+
+RUN mkdir -p /home/bob/.local/share/containers
+
+VOLUME /home/bob/.local/share/containers
 
 WORKDIR /home/bob/app
 

@@ -16,3 +16,8 @@ export DOCKER_BUILD_ARGUMENTS=""
 if [ "${DOCKER_CACHE_ENABLED:-true}" = "false" ]; then
     export DOCKER_BUILD_ARGUMENTS="--no-cache"
 fi
+export BUILDAH_LAYERS=true
+export BUILDAH_ISOLATION=chroot
+if [ "${DOCKER_CACHE_ENABLED:-true}" = "false" ]; then
+    export BUILDAH_LAYERS=false
+fi

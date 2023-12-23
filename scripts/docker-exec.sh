@@ -24,9 +24,10 @@ trap cleanup INT TERM EXIT
 docker build \
     ${DOCKER_BUILD_ARGUMENTS} \
     --build-arg X_DOCKER_USER_ID="$(id -u)" \
-    --build-arg X_DOCKER_USER_GROUP_ID="$(id -u)" \
+    --build-arg X_DOCKER_USER_GROUP_ID="995" \
     --target "devcontainer" \
     --iidfile "${IMAGE_ID_FILE}" \
+    --file docker.Dockerfile \
     .
 
 IMAGE_ID=$(cat "${IMAGE_ID_FILE}")
@@ -38,14 +39,8 @@ docker run \
     --entrypoint "/bin/bash" \
     --volume "${PWD}:/home/bob/app" \
     --volume "$(PWD)/.env:/home/bob/.env:ro" \
+    --volume /var/run/docker.sock:/var/run/docker.sock \
     --workdir "/home/bob/app" \
-    --cap-drop ALL \
-    --cap-add dac_override \
-    --cap-add setuid \
-    --cap-add setgid \
-    --cap-add sys_admin \
-    --security-opt apparmor=unconfined \
-    --security-opt seccomp=unconfined \
     "${IMAGE_ID}"
 
 git diff --exit-code

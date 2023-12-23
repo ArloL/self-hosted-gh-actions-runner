@@ -16,7 +16,7 @@ ${BUILD_COMMAND} build \
     --tag selfhostedghrunner:latest \
     --target "runner" \
     ${DOCKER_BUILD_ARGUMENTS} \
-    --file buildah.Dockerfile \
+    --file ${BUILD_COMMAND}.Dockerfile \
     .
 
 git diff --exit-code

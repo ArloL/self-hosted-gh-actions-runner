@@ -31,6 +31,29 @@ services:
     security_opt:
       - "apparmor=unconfined"
       - "seccomp=unconfined"
+  docker:
+    user: bob
+    build:
+      context: .
+      dockerfile: docker.Dockerfile
+      target: devcontainer
+      args:
+        - X_DOCKER_USER_ID
+        - X_DOCKER_USER_GROUP_ID
+    stdin_open: true
+    tty: true
+    working_dir: "/home/bob/app"
+    volumes:
+      - type: bind
+        source: .
+        target: /home/bob/app
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    secrets:
+      - source: env
+        target: /home/bob/.env
+    command: tail -f /dev/null
 
 secrets:
   env:
